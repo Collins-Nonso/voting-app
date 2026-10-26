@@ -13,7 +13,7 @@ permissions:
 jobs:
   build-and-scan:
     name: Build and scan ${{ matrix.component }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -40,7 +40,7 @@ jobs:
           load: true
 
       - name: Scan image with Trivy
-        uses: aquasecurity/trivy-action@0.29.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: voting-app-${{ matrix.component }}:ci
           format: json
@@ -57,4 +57,5 @@ jobs:
           path: trivy-${{ matrix.component }}.json
           if-no-files-found: warn
           retention-days: 14
+
 
