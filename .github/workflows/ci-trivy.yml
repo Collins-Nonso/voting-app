@@ -1,0 +1,59 @@
+﻿name: Voting App CI and Trivy Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-scan:
+    name: Build and scan ${{ matrix.component }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - component: vote
+            context: ./vote
+          - component: result
+            context: ./result
+          - component: worker
+            context: ./worker
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build application image
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          tags: voting-app-${{ matrix.component }}:ci
+          load: true
+
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: voting-app-${{ matrix.component }}:ci
+          format: json
+          output: trivy-${{ matrix.component }}.json
+          severity: CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN
+          exit-code: '0'
+          ignore-unfixed: true
+
+      - name: Upload Trivy report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-${{ matrix.component }}-report
+          path: trivy-${{ matrix.component }}.json
+          if-no-files-found: warn
+          retention-days: 14

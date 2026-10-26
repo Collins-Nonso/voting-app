@@ -15,5 +15,12 @@ spec:
         app: worker
     spec:
       containers:
-      - image: dockersamples/examplevotingapp_worker
+      - image: 286841103747.dkr.ecr.eu-west-1.amazonaws.com/voting-app-worker:latest
         name: worker
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "64Mi"
+          limits:
+            cpu: "300m"
+            memory: "256Mi"

@@ -1,0 +1,4 @@
+﻿images:
+  vote: "286841103747.dkr.ecr.eu-west-1.amazonaws.com/voting-app-vote:latest"
+  result: "286841103747.dkr.ecr.eu-west-1.amazonaws.com/voting-app-result:latest"
+  worker: "286841103747.dkr.ecr.eu-west-1.amazonaws.com/voting-app-worker:latest"
